@@ -13,6 +13,7 @@ exports.addUser = async (req, res) => {
         const existingUser = await User.findOne({$or: [{mmPhone}, {amPhone}]});
 
         if (existingUser) {
+            console.log("On se voit bien")
             return res.status(400).json({ status: 1,  message: "Numéro AM ou Moov Money déjà utilisé" });
           }
       
