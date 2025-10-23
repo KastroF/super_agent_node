@@ -53,13 +53,13 @@ exports.signIn = async (req, res) => {
       });
   
       if (!user) {
-        return res.status(400).json({ status: 1, message: "Numéro introuvable" });
+        return res.status(200).json({ status: 1, message: "Numéro introuvable" });
       }
   
       // Vérifie le mot de passe
       const validPassword = await bcrypt.compare(password, user.password);
       if (!validPassword) {
-        return res.status(400).json({ status: 1, message: "Mot de passe incorrect" });
+        return res.status(200).json({ status: 1, message: "Mot de passe incorrect" });
       }
   
       // Génère un token JWT
@@ -81,3 +81,19 @@ exports.signIn = async (req, res) => {
       res.status(500).json({ status: 1, error: "Erreur interne du serveur" });
     }
   };
+
+  exports.getUser = async (req, res) => {
+
+       try{
+
+        const user = await User.findOne({_id: req.auth.userId}); 
+
+        delete user.password; 
+
+        res.status(200).json({status: 0, user}); 
+
+       }catch (err) {
+      console.error(err);
+      res.status(500).json({ status: 1, error: "Erreur interne du serveur" });
+    } 
+  }

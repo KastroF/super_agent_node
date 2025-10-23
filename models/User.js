@@ -7,7 +7,8 @@ const userSchema = mongoose.Schema({
         mmPhone: {type: String}, 
         password: {type: String}, 
         active: {type: Boolean, default: true},
-        date: {type: Date, default: Date.now}
+        date: {type: Date, default: Date.now}, 
+        status: {type: "String"}
 })
 
 module.exports = mongoose.model("User", userSchema);            
