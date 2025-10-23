@@ -24,6 +24,7 @@ exports.addUser = async (req, res) => {
             mmPhone,
             amPhone,
             name,
+            status: "superagent",
             password: hashedPassword,
           });
       
