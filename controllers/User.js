@@ -14,7 +14,7 @@ exports.addUser = async (req, res) => {
 
         if (existingUser) {
             
-            return res.status(200).json({ status: 1,  message: "Numéro AM ou Moov Money déjà utilisé" });
+            return res.status(200).json({ status: 1,  message: "Numéro Airtel Money ou Moov Money déjà utilisé" });
           }
       
     
