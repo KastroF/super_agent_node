@@ -32,7 +32,7 @@ exports.addUser = async (req, res) => {
 
           const token = jwt.sign({ userId: newUser._id }, process.env.CODETOKEN);
       
-          res.status(201).json({ message: "Utilisateur ajouté avec succès", user: newUser, token });
+          res.status(201).json({ status: 0, message: "Utilisateur ajouté avec succès", user: newUser, token });
 
     }catch(err){
 
