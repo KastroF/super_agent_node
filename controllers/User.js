@@ -82,8 +82,6 @@ exports.signIn = async (req, res) => {
       res.status(500).json({ status: 1, error: "Erreur interne du serveur" });
     }
   };
-
-  
   exports.getUser = async (req, res) => {
     try {
       // Récupération de l'utilisateur connecté
@@ -103,12 +101,12 @@ exports.signIn = async (req, res) => {
       }
   
       // On ajoute dynamiquement le nombre de sous-utilisateurs
-      
+      user.count = count;
   
       // Supprimer le mot de passe du retour
       delete user.password;
   
-      res.status(200).json({ status: 0, user, count });
+      res.status(200).json({ status: 0, user });
     } catch (err) {
       console.error(err);
       res.status(500).json({ status: 1, error: "Erreur interne du serveur" });
