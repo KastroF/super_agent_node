@@ -83,18 +83,35 @@ exports.signIn = async (req, res) => {
     }
   };
 
+  
   exports.getUser = async (req, res) => {
-
-       try{
-
-        const user = await User.findOne({_id: req.auth.userId}); 
-
-        delete user.password; 
-
-        res.status(200).json({status: 0, user}); 
-
-       }catch (err) {
+    try {
+      // Récupération de l'utilisateur connecté
+      const user = await User.findById(req.auth.userId).lean(); // .lean() renvoie un objet JS pur
+  
+      if (!user) {
+        return res.status(404).json({ status: 1, error: "Utilisateur introuvable" });
+      }
+  
+      let count = 0;
+  
+      // Vérifie si c’est un superagent
+      if (user.status === "superagent") {
+        // 🔥 Correction de la faute de frappe: countDocuments (pas counDocuments)
+        // 🔥 Correction du champ: superagentId (pas superagent)
+        count = await User.countDocuments({ superagentId: user._id });
+      }
+  
+      // On ajoute dynamiquement le nombre de sous-utilisateurs
+      
+  
+      // Supprimer le mot de passe du retour
+      delete user.password;
+  
+      res.status(200).json({ status: 0, user, count });
+    } catch (err) {
       console.error(err);
       res.status(500).json({ status: 1, error: "Erreur interne du serveur" });
-    } 
-  }
+    }
+  };
+  
