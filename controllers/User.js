@@ -136,3 +136,24 @@ exports.signIn = async (req, res) => {
     }
   };
   
+
+  exports.updateBalance = async (req, res) => {
+
+        try{
+
+            const {balance, servicename} = req.body; 
+
+            let body = servicename === "am" ? {amSolde: balance} : {mmSolde: balance}; 
+
+            await User.updateOne({_id: req.auth.userId}, {$set: body}); 
+
+            res.status(201).json({status: 0});
+
+
+
+        }catch(err){
+
+            console.log(err); 
+            res.status(500).json({err})
+        }
+  }
