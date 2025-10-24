@@ -9,7 +9,7 @@ exports.getPartners = async (req, res) => {
         const partners = await Partner.find({superagentId: req.auth.userId}).lean(); 
 
         if (!partners.length) {
-            return res.status(200).json({ status: 0, partners: [], message: "Aucun partenaire trouvé" });
+            return res.status(200).json({ status: 0, partners: [], message: "Aucun compte créé pour le moment" });
           }
 
         res.status(200).json({status: 0, partners}); 
