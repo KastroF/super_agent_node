@@ -1,12 +1,11 @@
-const Partner = require("../models/Partner"); 
 const bcrypt = require("bcrypt");
-
+const User = require("../models/User");
 
 exports.getPartners = async (req, res) => {
 
     try{
 
-        const partners = await Partner.find({superagentId: req.auth.userId}).lean(); 
+        const partners = await User.find({superagentId: req.auth.userId}).lean(); 
 
         if (!partners.length) {
             return res.status(200).json({ status: 0, partners: [], message: "Aucun compte créé pour le moment" });
@@ -28,29 +27,28 @@ exports.addPartner = async (req, res) => {
   try {
     const { name, password, services } = req.body;
 
-    // Vérifier les champs obligatoires
     if (!name || !password) {
       return res.status(400).json({ status: 1, message: "Nom et mot de passe requis" });
     }
 
-    // Vérifie s’il existe déjà un partenaire avec le même nom pour ce superagent
-    const existingPartner = await Partner.findOne({
+    // Vérifie si un partenaire avec ce nom existe déjà pour ce superagent
+    const existingPartner = await User.findOne({
       name,
-      superagentId: req.auth.userId
+      superagentId: req.auth.userId,
+      status: "partner"
     });
 
     if (existingPartner) {
       return res.status(400).json({ status: 1, message: "Un partenaire avec ce nom existe déjà" });
     }
 
-    // Hash du mot de passe
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // Création du partenaire
-    const newPartner = new Partner({
+    const newPartner = new User({
       name,
       password: hashedPassword,
       services: services || [],
+      status: "partner",
       superagentId: req.auth.userId
     });
 
