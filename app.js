@@ -59,7 +59,10 @@ app.use((req, res, next) => {
 
 const userRouter = require("./routes/User"); 
 const partnerRouter = require("./routes/Partner"); 
+const orderRouter = require("./routes/Order");
 
+
+app.use("/api/order", orderRouter);
 app.use("/api/partner", partnerRouter);
 app.use("/api/user", userRouter); 
 
