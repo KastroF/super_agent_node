@@ -39,7 +39,7 @@ exports.addPartner = async (req, res) => {
     });
 
     if (existingPartner) {
-      return res.status(400).json({ status: 1, message: "Un partenaire avec ce nom existe déjà" });
+      return res.status(200).json({ status: 1, message: "Un partenaire avec ce nom existe déjà" });
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
