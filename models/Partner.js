@@ -1,16 +1,15 @@
 const mongoose = require("mongoose"); 
 
-const userSchema = mongoose.Schema({
+const partnerSchema = mongoose.Schema({
 
         name: {type: String}, 
-        amPhone: {type: String}, 
-        mmPhone: {type: String}, 
         password: {type: String}, 
         active: {type: Boolean, default: true},
         date: {type: Date, default: Date.now}, 
-        status: {type: String}, 
+        services: {type: Array}, 
         superagentId: {type: String}, 
-        count: {type: Number}
+        
+  
 })
 
-module.exports = mongoose.model("User", userSchema);            
+module.exports = mongoose.model("Partner", partnerSchema);            
