@@ -114,19 +114,19 @@ exports.signIn = async (req, res) => {
   };
   exports.modifySolde = async (req, res) => {
     try {
-      const { servicename, solde } = req.body;
+      const { servicename, pass } = req.body;
   
-      if (!servicename || solde === undefined) {
+      if (!servicename || pass === undefined) {
         return res.status(400).json({ status: 1, message: "Paramètres manquants" });
       }
   
-      const body = servicename === "am" ? { amSolde: solde } : { mmSolde: solde };
+      const body = servicename === "am" ? { amPass: pass } : { mmPass: pass };
   
       await User.updateOne({ _id: req.auth.userId }, { $set: body });
   
       res.status(200).json({
         status: 0,
-        message: `Solde ${servicename.toUpperCase()} mis à jour avec succès.`,
+        message: `Mot de passe  ${servicename.toUpperCase()} mis à jour avec succès.`,
       });
     } catch (err) {
       console.error(err);

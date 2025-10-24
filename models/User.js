@@ -6,6 +6,8 @@ const userSchema = mongoose.Schema({
   mmPhone: { type: String },
   amSolde: { type: Number },
   mmSolde: { type: Number },
+  amPass: { type: String },
+  mmPass: { type: String },
   password: { type: String, required: true },
   active: { type: Boolean, default: true },
   date: { type: Date, default: Date.now },
