@@ -4,6 +4,8 @@ const userSchema = mongoose.Schema({
   name: { type: String, required: true },
   amPhone: { type: String },
   mmPhone: { type: String },
+  amSolde: { type: Number },
+  mmSolde: { type: Number },
   password: { type: String, required: true },
   active: { type: Boolean, default: true },
   date: { type: Date, default: Date.now },

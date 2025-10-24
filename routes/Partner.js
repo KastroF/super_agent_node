@@ -8,5 +8,4 @@ const auth = require("../middleware/auth");
 router.get("/getpartners", auth, partnerCtrl.getPartners); 
 router.post("/addpartner", auth, partnerCtrl.addPartner);
 
-
 module.exports = router; 
