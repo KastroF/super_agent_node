@@ -112,24 +112,25 @@ exports.signIn = async (req, res) => {
       res.status(500).json({ status: 1, error: "Erreur interne du serveur" });
     }
   };
+  exports.modifySolde = async (req, res) => {
+    try {
+      const { servicename, solde } = req.body;
   
-
-  exports.modifyPass = async (req, res) => {
-
-        try{
-
-            const {servicename, solde} = req.body; 
-
-            let body = {}; 
-
-            (servicename === "am") ? body = {amSolde: solde} : {mmSolde: solde}; 
-
-            await User.updateOne({id: req.auth.userId}, {$set: body}); 
-
-            res.status(201).json({status:0 , message: "Mot de passe modifié avec succès"}); 
-
-        }catch (err) {
+      if (!servicename || solde === undefined) {
+        return res.status(400).json({ status: 1, message: "Paramètres manquants" });
+      }
+  
+      const body = servicename === "am" ? { amSolde: solde } : { mmSolde: solde };
+  
+      await User.updateOne({ _id: req.auth.userId }, { $set: body });
+  
+      res.status(200).json({
+        status: 0,
+        message: `Solde ${servicename.toUpperCase()} mis à jour avec succès.`,
+      });
+    } catch (err) {
       console.error(err);
       res.status(500).json({ status: 1, error: "Erreur interne du serveur" });
     }
-  }
+  };
+  
