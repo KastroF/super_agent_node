@@ -117,7 +117,9 @@ exports.signIn = async (req, res) => {
       const { servicename, pass } = req.body;
   
       if (!servicename || pass === undefined) {
-        return res.status(400).json({ status: 1, message: "Paramètres manquants" });
+
+        return res.status(200).json({ status: 1, message: "Paramètres manquants" });
+        
       }
   
       const body = servicename === "am" ? { amPass: pass } : { mmPass: pass };
