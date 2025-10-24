@@ -112,14 +112,14 @@ exports.signIn = async (req, res) => {
       res.status(500).json({ status: 1, error: "Erreur interne du serveur" });
     }
   };
-  exports.modifySolde = async (req, res) => {
+  exports.modifyPass = async (req, res) => {
     try {
       const { servicename, pass } = req.body;
   
       if (!servicename || pass === undefined) {
 
         return res.status(200).json({ status: 1, message: "Paramètres manquants" });
-        
+
       }
   
       const body = servicename === "am" ? { amPass: pass } : { mmPass: pass };
