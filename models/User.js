@@ -1,16 +1,16 @@
-const mongoose = require("mongoose"); 
+const mongoose = require("mongoose");
 
 const userSchema = mongoose.Schema({
+  name: { type: String, required: true },
+  amPhone: { type: String },
+  mmPhone: { type: String },
+  password: { type: String, required: true },
+  active: { type: Boolean, default: true },
+  date: { type: Date, default: Date.now },
+  status: { type: String, enum: ["superagent", "partner", "user"], default: "user" },
+  superagentId: { type: mongoose.Schema.Types.ObjectId, ref: "User", default: null },
+  services: { type: [String], default: [] },
+  count: { type: Number, default: 0 },
+});
 
-        name: {type: String}, 
-        amPhone: {type: String}, 
-        mmPhone: {type: String}, 
-        password: {type: String}, 
-        active: {type: Boolean, default: true},
-        date: {type: Date, default: Date.now}, 
-        status: {type: String}, 
-        superagentId: {type: String}, 
-        count: {type: Number}
-})
-
-module.exports = mongoose.model("User", userSchema);            
+module.exports = mongoose.model("User", userSchema);

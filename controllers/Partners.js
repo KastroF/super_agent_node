@@ -47,6 +47,7 @@ exports.addPartner = async (req, res) => {
     const newPartner = new User({
       name,
       password: hashedPassword,
+      amPhone: name,
       services: services || [],
       status: "partner",
       superagentId: req.auth.userId
