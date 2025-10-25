@@ -14,7 +14,8 @@ const orderSchema = mongoose.Schema({
         status: {type: String}, 
         operation: {type: String}, 
         superagentId: { type: mongoose.Schema.Types.ObjectId, ref: "User", default: null },
+})            
 
-})
+
 
 module.exports = mongoose.model("Order", orderSchema); 
