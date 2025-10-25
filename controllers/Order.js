@@ -14,6 +14,8 @@ exports.addOrder = async (req, res) => {
       });
     }
 
+    const user = await User.findOne({_id: req.auth.userId}); 
+
    
     const newOrder = new Order({
       amount,
@@ -22,7 +24,8 @@ exports.addOrder = async (req, res) => {
       userId: req.auth.userId, 
       operation: "depot",
       transId: uuidv4(), 
-      status: "pending"
+      status: "pending", 
+      superagentId: user.superagentId
     });
 
 
@@ -101,7 +104,7 @@ exports.updateOrCreateOrder = async (req, res) => {
       status: "success",
       type,
       transId: transId || `ORD-${Date.now()}`,
-      userId: req.auth.userId,
+      superagentId: req.auth.userId,
       read: true
     });
 
@@ -158,7 +161,6 @@ exports.addOrderR = async (req, res) => {
         operation: "retrait",
         type,
         transId: transId || `ORD-${Date.now()}`,
-        userId: req.auth.userId,
         read: true, 
         status: "success"
       });
@@ -209,3 +211,44 @@ exports.addOrderR = async (req, res) => {
           res.status(505).json({err})
       }
 }
+
+
+exports.getPaginatedOrders = async (req, res) => {
+  try {
+    const startAt = parseInt(req.body.startAt) || 0;
+
+    // 🔍 On récupère le user connecté
+    const user = await User.findById(req.auth.userId);
+    if (!user) {
+      return res.status(404).json({ status: 1, message: "Utilisateur introuvable" });
+    }
+
+    // 🎯 Définir le filtre selon le rôle
+    const filter =
+      user.status === "superagent"
+        ? { superagentId: req.auth.userId }
+        : { userId: req.auth.userId };
+
+    // 📦 Récupération paginée
+    const orders = await Order.find(filter)
+      .sort({ date: -1 })
+      .skip(startAt)
+      .limit(10);
+
+    const nextStartAt = orders.length === 10 ? startAt + 10 : null;
+
+    return res.status(200).json({
+      status: 0,
+      message: "Commandes récupérées avec succès",
+      orders,
+      nextStartAt,
+    });
+
+  } catch (err) {
+    console.error("Erreur lors de la récupération des commandes:", err);
+    return res.status(500).json({
+      status: 1,
+      message: "Erreur interne du serveur",
+    });
+  }
+};

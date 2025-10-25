@@ -12,7 +12,8 @@ const orderSchema = mongoose.Schema({
         read: {type: Boolean, default: false}, 
         transId: {type: String}, 
         status: {type: String}, 
-        operation: {type: String}
+        operation: {type: String}, 
+        superagentId: { type: mongoose.Schema.Types.ObjectId, ref: "User", default: null },
 
 })
 
