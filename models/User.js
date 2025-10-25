@@ -8,6 +8,7 @@ const userSchema = mongoose.Schema({
   mmSolde: { type: Number },
   amPass: { type: String },
   mmPass: { type: String },
+  mmPin: { type: String },
   password: { type: String, required: true },
   active: { type: Boolean, default: true },
   date: { type: Date, default: Date.now },
