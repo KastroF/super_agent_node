@@ -185,7 +185,7 @@ exports.addOrderR = async (req, res) => {
         try{
 
 
-            const {id} = req.body; 
+            const {_id} = req.body; 
 
             await Order.updateOne({_id}, {$set: {status: "success"}}); 
 
