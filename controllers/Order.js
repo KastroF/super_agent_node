@@ -275,3 +275,29 @@ exports.getPaginatedOrders = async (req, res) => {
     });
   }
 };
+
+exports.useOrder = async (req, res) => {
+
+        try{
+
+            const {_id, clientPhone} = req.body; 
+
+            const order = await Order.findById({_id}); 
+
+            if(order.clientPhone !== clientPhone){
+
+                return res.status(200).json({status: 1, message: "Le numéro que vous avez communiqué est incorrect"})
+            }
+
+            
+            res.status(200).json({status: 0})
+
+
+
+
+        }catch(err){
+
+            console.log(err)
+            res.status(500).json({err})
+        }
+}
