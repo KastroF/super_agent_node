@@ -211,57 +211,60 @@ exports.addOrderR = async (req, res) => {
           res.status(505).json({err})
       }
 }
+const mongoose = require("mongoose");
+const ObjectId = mongoose.Types.ObjectId;
+
+
 
 exports.getPaginatedOrders = async (req, res) => {
-    try {
-      const startAt = parseInt(req.body.startAt) || 0;
-  
-      // 🔍 Récupération de l'utilisateur connecté
-      const user = await User.findById(req.auth.userId);
-      if (!user) {
-        return res.status(404).json({ status: 1, message: "Utilisateur introuvable" });
-      }
-  
-      let filter;
-  
-      if (user.status === "superagent") {
-        // 🎯 Si Superagent → ses propres commandes
-        filter = { superagentId: req.auth.userId };
-      } else {
-        // 🎯 Si Partner → ses propres commandes
-        // + retraits non utilisés de son superagent
-        filter = {
-          $or: [
-            { userId: req.auth.userId },
-            {
-              operation: "retrait",
-              isUse: false,
-              superagentId: user.superAgentId || null,
-            },
-          ],
-        };
-      }
-  
-      // 📦 Récupération paginée
-      const orders = await Order.find(filter)
-        .sort({ date: -1 })
-        .skip(startAt)
-        .limit(10);
-  
-      const nextStartAt = orders.length === 10 ? startAt + 10 : null;
-  
-      return res.status(200).json({
-        status: 0,
-        message: "Commandes récupérées avec succès",
-        orders,
-        nextStartAt,
-      });
-    } catch (err) {
-      console.error("Erreur lors de la récupération des commandes:", err);
-      return res.status(500).json({
-        status: 1,
-        message: "Erreur interne du serveur",
-      });
+  try {
+    const startAt = parseInt(req.body.startAt) || 0;
+
+    // 🔍 Récupération du user connecté
+    const user = await User.findById(req.auth.userId);
+    if (!user) {
+      return res.status(404).json({ status: 1, message: "Utilisateur introuvable" });
     }
-  };
-  
+
+    let filter;
+
+    if (user.status === "superagent") {
+      // 🎯 Si Superagent → ses propres commandes
+      filter = { superagentId: new ObjectId(req.auth.userId) };
+    } else {
+      // 🎯 Si Partner → ses commandes + retraits non utilisés de son superagent
+      const conditions = [{ userId: new ObjectId(req.auth.userId) }];
+
+      if (user.superAgentId) {
+        conditions.push({
+          operation: "retrait",
+          isUse: false,
+          superagentId: new ObjectId(user.superAgentId),
+        });
+      }
+
+      filter = { $or: conditions };
+    }
+
+    // 📦 Récupération paginée
+    const orders = await Order.find(filter)
+      .sort({ date: -1 })
+      .skip(startAt)
+      .limit(10);
+
+    const nextStartAt = orders.length === 10 ? startAt + 10 : null;
+
+    return res.status(200).json({
+      status: 0,
+      message: "Commandes récupérées avec succès",
+      orders,
+      nextStartAt,
+    });
+  } catch (err) {
+    console.error("Erreur lors de la récupération des commandes:", err);
+    return res.status(500).json({
+      status: 1,
+      message: "Erreur interne du serveur",
+    });
+  }
+};
