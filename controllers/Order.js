@@ -215,7 +215,6 @@ const mongoose = require("mongoose");
 const ObjectId = mongoose.Types.ObjectId;
 
 
-
 exports.getPaginatedOrders = async (req, res) => {
   try {
     const startAt = parseInt(req.body.startAt) || 0;
@@ -229,21 +228,29 @@ exports.getPaginatedOrders = async (req, res) => {
     let filter;
 
     if (user.status === "superagent") {
-      // 🎯 Si Superagent → ses propres commandes
+      // 🎯 Si superagent → ses propres commandes
       filter = { superagentId: new ObjectId(req.auth.userId) };
     } else {
-      // 🎯 Si Partner → ses commandes + retraits non utilisés de son superagent
-      const conditions = [{ userId: new ObjectId(req.auth.userId) }];
+      // 🎯 Si partner → ses commandes + retraits non utilisés de son superagent
+      const userObjId = new ObjectId(req.auth.userId);
+      const superagentObjId = user.superagentId
+        ? new ObjectId(user.superagentId)
+        : null;
 
-      if (user.superAgentId) {
-        conditions.push({
-          operation: "retrait",
-          isUse: false,
-          superagentId: new ObjectId(user.superAgentId),
-        });
-      }
-
-      filter = { $or: conditions };
+      filter = {
+        $or: [
+          { userId: userObjId },
+          ...(superagentObjId
+            ? [
+                {
+                  operation: "retrait",
+                  isUse: false,
+                  superagentId: superagentObjId,
+                },
+              ]
+            : []),
+        ],
+      };
     }
 
     // 📦 Récupération paginée
