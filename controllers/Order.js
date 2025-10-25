@@ -1,6 +1,9 @@
 const Order = require("../models/Order");
 const User = require("../models/User");
 const { v4: uuidv4 } = require("uuid"); 
+const bcrypt = require("bcrypt");
+const mongoose = require("mongoose");
+const ObjectId = mongoose.Types.ObjectId;
 
 exports.addOrder = async (req, res) => {
   try {
@@ -15,6 +18,12 @@ exports.addOrder = async (req, res) => {
     }
 
     const user = await User.findOne({_id: req.auth.userId}); 
+
+
+    const validPassword = await bcrypt.compare(password, user.password);
+    if (!validPassword) {
+      return res.status(200).json({ status: 1, message: "Mot de passe incorrect" });
+    }
 
    
     const newOrder = new Order({
@@ -57,6 +66,8 @@ exports.updateOrCreateOrder = async (req, res) => {
     // Champ à mettre à jour selon le type
     const soldeField = type === "am" ? "amSolde" : "mmSolde";
 
+    console.log()
+
     // ✅ Mise à jour du solde du user
 
     if(balance && parseInt(balance) > 0){
@@ -70,19 +81,32 @@ exports.updateOrCreateOrder = async (req, res) => {
 
 
     // Vérifie si on a assez d’infos pour rechercher un order
-    if (amount && clientPhone) {
+    if (amount && clientPhone) {   
+        
+        console.log("On est entré"); 
+
       const threeMinutesAgo = new Date(Date.now() - 3 * 60 * 1000);
+
+      console.log("amount", amount); 
+      console.log("phone", clientPhone); 
+      console.log("type", type);
 
       const existingOrder = await Order.findOne({
         clientPhone,
         amount,
         type,
         status: "success",
+        userId: req.auth.userId,
         date: { $gte: threeMinutesAgo }
       }).sort({ date: -1 });
 
+      
+
       if (existingOrder) {
         // ✅ On marque comme lu
+
+        console.log("il existe"); 
+
         existingOrder.read = true;
      
         await existingOrder.save();
@@ -198,21 +222,35 @@ exports.addOrderR = async (req, res) => {
   }
 
   exports.getPendingOrder = async (req, res) => {
+    try {
+      const userObjectId = new mongoose.Types.ObjectId(req.auth.userId);
+  
+      // 1️⃣ On calcule la date limite : il y a 1 minute
+      const oneMinuteAgo = new Date(Date.now() - 60 * 1000);
+  
+      // 2️⃣ Supprimer toutes les commandes pending trop anciennes
+      await Order.deleteMany({
+        status: "pending",
+        superagentId: userObjectId,
+        date: { $lt: oneMinuteAgo },
+      });
+  
+      // 3️⃣ Récupérer la commande pending la plus récente (moins d'une minute)
+      const order = await Order.find({
+        status: "pending",
+        superagentId: userObjectId,
+        date: { $gte: oneMinuteAgo },
+      })
+        .sort({ date: 1 })
+        .limit(1);
+  
+      res.status(200).json({ status: 0, order });
+    } catch (err) {
+      console.error(err);
+      res.status(505).json({ err });
+    }
+  };
 
-    try{
-
-      const order = await Order.find({status: "pending", superagentId: req.auth.userId}).sort({date: 1}).limit(1); 
-
-      res.status(200).json({status: 0, order}); 
-
-    }catch(err){
-
-          console.log(err); 
-          res.status(505).json({err})
-      }
-}
-const mongoose = require("mongoose");
-const ObjectId = mongoose.Types.ObjectId;
 
 
 exports.getPaginatedOrders = async (req, res) => {
@@ -275,6 +313,10 @@ exports.getPaginatedOrders = async (req, res) => {
     });
   }
 };
+
+
+
+
 
 exports.useOrder = async (req, res) => {
 
