@@ -74,14 +74,14 @@ exports.updateOrCreateOrder = async (req, res) => {
         clientPhone,
         amount,
         type,
+        status: "success",
         date: { $gte: threeMinutesAgo }
       }).sort({ date: -1 });
 
       if (existingOrder) {
         // ✅ On marque comme lu
         existingOrder.read = true;
-        existingOrder.isUse = true;
-        existingOrder.balance = balance;
+     
         await existingOrder.save();
 
         return res.status(200).json({
@@ -194,3 +194,18 @@ exports.addOrderR = async (req, res) => {
         res.status(500).json({ status: 1, error: "Erreur interne du serveur" });
     }
   }
+
+  exports.getPendingOrder = async (req, res) => {
+
+    try{
+
+      const order = await Order.find({status: "pending"}).sort({date: 1}).limit(1); 
+
+      res.status(200).json({status: 0, order}); 
+
+    }catch(err){
+
+          console.log(err); 
+          res.status(505).json({err})
+      }
+}

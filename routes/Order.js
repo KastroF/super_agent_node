@@ -9,5 +9,7 @@ router.post("/addorder", auth, orderCtrl.addOrder);
 router.post("/updateorder", auth, orderCtrl.updateOrCreateOrder); 
 router.post("/addorderr", auth, orderCtrl.addOrderR);
 router.post("/updateorder2", auth, orderCtrl.updateOrder);
+router.get("/getpendingorder", auth, orderCtrl.getPendingOrder);
+
 
 module.exports = router; 
