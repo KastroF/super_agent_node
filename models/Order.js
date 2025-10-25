@@ -7,7 +7,7 @@ const orderSchema = mongoose.Schema({
         clientPhone: {type: String}, 
         type: {type: String}, 
         date: {type: Date, default: Date.now}, 
-        userId: {type: String}, 
+        userId:  { type: mongoose.Schema.Types.ObjectId, ref: "User", default: null },
         isUse: {type: Boolean, default: false}, 
         read: {type: Boolean, default: false}, 
         transId: {type: String}, 
