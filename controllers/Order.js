@@ -9,7 +9,7 @@ const ObjectId = mongoose.Types.ObjectId;
 
 exports.addOrder = async (req, res) => {
   try {
-    const { amount, clientPhone, type } = req.body;
+    const { amount, clientPhone, type, password } = req.body;
 
 
     if (!amount || !clientPhone || !type) {
