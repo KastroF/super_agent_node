@@ -282,7 +282,9 @@ exports.useOrder = async (req, res) => {
 
             const {_id, clientPhone} = req.body; 
 
-            const order = await Order.findById({_id}); 
+            const order = await Order.findById({_id});
+            
+            console.log(order); 
 
             if(order.clientPhone !== clientPhone){
 
@@ -290,6 +292,7 @@ exports.useOrder = async (req, res) => {
             }
 
             
+            await Order.updateOne({_id}, {$set: {userId: req.auth.userId, isUse: true}}); 
             res.status(200).json({status: 0})
 
 
