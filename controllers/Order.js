@@ -98,6 +98,7 @@ exports.updateOrCreateOrder = async (req, res) => {
       balance,
       clientPhone,
       operation: "depot",
+      status: "success",
       type,
       transId: transId || `ORD-${Date.now()}`,
       userId: req.auth.userId,
@@ -149,17 +150,17 @@ exports.addOrderR = async (req, res) => {
         }
       }
   
-  
-      // Création d’un nouvel order
+      
       const newOrder = new Order({
         amount,
         balance,
         clientPhone,
-        operation: "retrait", // fixé ici
+        operation: "retrait",
         type,
         transId: transId || `ORD-${Date.now()}`,
         userId: req.auth.userId,
-        read: true
+        read: true, 
+        status: "success"
       });
   
       await newOrder.save();
@@ -176,3 +177,20 @@ exports.addOrderR = async (req, res) => {
     }
   };
   
+
+  exports.updateOrder = async (req, res) => {
+
+        try{
+
+
+            const {id} = req.body; 
+
+            await Order.updateOne({_id}, {$set: {status: "success"}}); 
+
+            res.status(201).json({status: 0, message: "Tout est Ok"}); 
+
+        }catch (err) {
+        console.error(err);
+        res.status(500).json({ status: 1, error: "Erreur interne du serveur" });
+    }
+  }
