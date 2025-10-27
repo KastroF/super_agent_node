@@ -12,6 +12,8 @@ router.post("/updateorder2", auth, orderCtrl.updateOrder);
 router.get("/getpendingorder", auth, orderCtrl.getPendingOrder);
 router.post("/getpaginatedorders", auth, orderCtrl.getPaginatedOrders);
 router.post("/useorder", auth, orderCtrl.useOrder);
+router.post("/canceledorder", auth, orderCtrl.canceledOrder); 
+
 
 
 module.exports = router; 

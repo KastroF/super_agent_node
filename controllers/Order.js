@@ -351,3 +351,24 @@ exports.useOrder = async (req, res) => {
             res.status(500).json({err})
         }
 }
+
+
+exports.canceledOrder = async (req, res) => {
+
+    try{
+
+      const {_id} = req.body; 
+      
+      await Order.updateOne({_id}, {$set: {canceled: true}}); 
+
+      res.status(201).json({status: 0, message: "Annulation de transaction initié avec succès"}); 
+
+      
+
+
+    }catch(err){
+
+            console.log(err)
+            res.status(500).json({err})
+        }
+}

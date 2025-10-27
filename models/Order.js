@@ -10,6 +10,7 @@ const orderSchema = mongoose.Schema({
         userId:  { type: mongoose.Schema.Types.ObjectId, ref: "User", default: null },
         isUse: {type: Boolean, default: false}, 
         read: {type: Boolean, default: false}, 
+        canceled: {type: Boolean, default: false}, 
         transId: {type: String}, 
         status: {type: String}, 
         operation: {type: String}, 
