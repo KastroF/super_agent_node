@@ -98,7 +98,7 @@ exports.updateOrCreateOrder = async (req, res) => {
         amount,
         type,
         status: "success",
-        userId: req.auth.userId,
+        superagentId: req.auth.userId,
         date: { $gte: threeMinutesAgo }
       }).sort({ date: -1 });
 
@@ -188,7 +188,8 @@ exports.addOrderR = async (req, res) => {
         type,
         transId: transId || `ORD-${Date.now()}`,
         read: true, 
-        status: "success"
+        status: "success", 
+        superagentId: req.auth.userId
       });
   
       await newOrder.save();
