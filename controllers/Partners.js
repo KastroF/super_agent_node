@@ -92,3 +92,21 @@ exports.lockOrUnLockPartner = async (req, res) => {
     res.status(500).json({ status: 1, error: "Erreur interne du serveur" });
   }
 }
+
+exports.modifyPartnerPassword = async (req, res) => {
+
+    try{
+
+      const {password, _id} = req.body; 
+
+      const hashedPassword = await bcrypt.hash(password, 10);
+
+      await User.updateOne({_id}, {$set: {password: hashedPassword}}); 
+
+      
+
+    }catch (err) {
+    console.error(err);
+    res.status(500).json({ status: 1, error: "Erreur interne du serveur" });
+  }
+}
