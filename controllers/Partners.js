@@ -72,3 +72,23 @@ exports.addPartner = async (req, res) => {
     res.status(500).json({ status: 1, error: "Erreur interne du serveur" });
   }
 };
+
+exports.lockOrUnLockPartner = async (req, res) => {
+
+    try{
+
+      const {status, _id} = req.body;
+
+      await User.updateOne({_id}, {$set: {active: status}}); 
+
+      const user = await User.findById({_id}); 
+
+      delete user.password; 
+
+      res.status(201).json({status: 0, message: `Ce compte a été ${status ? "débloqué" : "bloqué"} avec succès`, user})
+
+    }catch (err) {
+    console.error(err);
+    res.status(500).json({ status: 1, error: "Erreur interne du serveur" });
+  }
+}

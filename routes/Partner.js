@@ -7,5 +7,6 @@ const auth = require("../middleware/auth");
 
 router.get("/getpartners", auth, partnerCtrl.getPartners); 
 router.post("/addpartner", auth, partnerCtrl.addPartner);
+router.post("/lockorunlock", auth, partnerCtrl.lockOrUnLockPartner);
 
 module.exports = router; 
