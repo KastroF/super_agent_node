@@ -103,7 +103,7 @@ exports.modifyPartnerPassword = async (req, res) => {
 
       await User.updateOne({_id}, {$set: {password: hashedPassword}}); 
 
-      
+      res.status(201).json({status: 0});
 
     }catch (err) {
     console.error(err);
