@@ -110,6 +110,7 @@ exports.updateOrCreateOrder = async (req, res) => {
         console.log("il existe"); 
 
         existingOrder.read = true;
+        existingOrder.transId = transId;
      
         await existingOrder.save();
 
@@ -179,6 +180,7 @@ exports.addOrderR = async (req, res) => {
         }
       }
   
+      console.log("On a un transid", transId);
       
       const newOrder = new Order({
         amount,
