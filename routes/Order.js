@@ -14,6 +14,6 @@ router.post("/getpaginatedorders", auth, orderCtrl.getPaginatedOrders);
 router.post("/useorder", auth, orderCtrl.useOrder);
 router.post("/canceledorder", auth, orderCtrl.canceledOrder); 
 router.post("/extractamcomission", auth, orderCtrl.extractAmCommission);
-
+router.post("/getpaginatedorders2", auth, orderCtrl.getPaginatedOrders2);
 
 module.exports = router; 

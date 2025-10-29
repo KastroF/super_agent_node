@@ -4,7 +4,7 @@ const { v4: uuidv4 } = require("uuid");
 const bcrypt = require("bcrypt");
 const mongoose = require("mongoose");
 const ObjectId = mongoose.Types.ObjectId;
-
+const moment = require("moment-timezone");
 
 
 exports.addOrder = async (req, res) => {
@@ -509,3 +509,72 @@ exports.extractAmCommission = async (req, res) => {
             res.status(500).json({err})
         }
 }
+
+
+exports.getPaginatedOrders2 = async (req, res) => {
+  try {
+    const startAt = parseInt(req.body.startAt) || 0;
+
+    const {type, _id} = req.body; 
+
+    // 🔍 Récupération du user connecté
+    const user = await User.findById(req.auth.userId);
+    if (!user) {
+      return res.status(200).json({ status: 1, message: "Utilisateur introuvable" });
+    }
+
+const TZ = "Africa/Libreville";
+
+// Calcul de la plage horaire du jour local
+const startOfLocalDay = moment.tz(TZ).startOf("day"); // 29 oct 00h00 heure du Gabon
+const endOfLocalDay = moment.tz(TZ).endOf("day");     // 29 oct 23h59:59 heure du Gabon
+
+// Conversion en UTC avant la requête Mongo
+const startUTC = startOfLocalDay.clone().utc().toDate();
+const endUTC = endOfLocalDay.clone().utc().toDate();
+
+    // 📦 Récupération paginée
+    const orders = await Order.find({type, userId: _id ? _id : req.auth.userId, date: {$gte: startUTC, $lt: endUTC} })
+      .sort({ date: -1 })
+      .skip(startAt)
+      .limit(10);
+
+    const totalDepots = await Order.countDocuments({
+
+          userId: _id ? _id : req.auth.userId, 
+          date: {$gte: startUTC, $lt: endUTC}, 
+          type, 
+          status: "success", 
+          operation: "depot"
+     })
+
+
+     const totalRetraits = await Order.countDocuments({
+
+      userId: _id ? _id : req.auth.userId, 
+      date: {$gte: startUTC, $lt: endUTC}, 
+      type, 
+      status: "success", 
+      operation: "retrait"
+ })
+
+
+    const nextStartAt = orders.length === 10 ? startAt + 10 : null;
+
+    return res.status(200).json({
+      status: 0,
+      message: "Commandes récupérées avec succès",
+      orders,
+      totalDepots, 
+      totalRetraits,
+      nextStartAt,
+      commission: user.currentCommission
+    });
+  } catch (err) {
+    console.error("Erreur lors de la récupération des commandes:", err);
+    return res.status(500).json({
+      status: 1,
+      message: "Erreur interne du serveur",
+    });
+  }
+};
