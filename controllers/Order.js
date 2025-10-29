@@ -27,6 +27,20 @@ exports.addOrder = async (req, res) => {
       return res.status(200).json({ status: 1, message: "Mot de passe incorrect" });
     }
 
+    const superAgent = await User.findOne({superagentId: user.superagentId}); 
+
+    if(type === "am" && parseInt(superAgent.amSolde) < parseInt(amount)){
+
+      return res.status(200).json({ status: 1, message: "Solde Airtel Money insuffisant" });
+
+    }
+
+    if(type === "mm" && parseInt(superAgent.mmSolde) < parseInt(amount)){
+
+      return res.status(200).json({ status: 1, message: "Solde Moov Money insuffisant" });
+
+    }
+
    
     const newOrder = new Order({
       amount,
@@ -82,6 +96,9 @@ exports.updateOrCreateOrder = async (req, res) => {
     }
 
 
+    const user = await User.findOne({  _id: req.auth.userId })
+
+
     // Vérifie si on a assez d’infos pour rechercher un order
     if (amount && clientPhone) {   
         
@@ -116,6 +133,7 @@ exports.updateOrCreateOrder = async (req, res) => {
 
         return res.status(200).json({
           status: 0,
+          user,
           message: "Commande mise à jour et solde actualisé",
           order: existingOrder
         });
@@ -139,6 +157,7 @@ exports.updateOrCreateOrder = async (req, res) => {
 
     return res.status(201).json({
       status: 0,
+      user,
       message: "Nouvelle commande créée et solde mis à jour",
       order: newOrder
     });
@@ -181,6 +200,8 @@ exports.addOrderR = async (req, res) => {
       }
   
       console.log("On a un transid", transId);
+
+      console.log(req.body);
       
       const newOrder = new Order({
         amount,
@@ -363,7 +384,7 @@ exports.canceledOrder = async (req, res) => {
 
       res.status(201).json({status: 0, message: "Annulation de transaction initié avec succès"}); 
 
-      
+
 
 
     }catch(err){
