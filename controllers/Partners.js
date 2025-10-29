@@ -129,7 +129,12 @@ exports.modifyPartnerPassword = async (req, res) => {
         }
 
 
+      }else{
+
+        body = {name}
       }
+
+     
 
        
 
