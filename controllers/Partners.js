@@ -14,6 +14,7 @@ exports.getPartners = async (req, res) => {
         res.status(200).json({status: 0, partners}); 
 
 
+ 
     }catch(err) {
 
         console.log(err); 
@@ -43,6 +44,17 @@ exports.addPartner = async (req, res) => {
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
+
+    const partners = await User.findOne({
+      superagentId: req.auth.userId,
+      status: "partner"
+    });
+
+    if(partners.length === 3){
+
+      return res.status(200).json({ status: 1, message: "Vous ne pouvez pas créé plus de 3 comptes" });
+
+    }
 
     const newPartner = new User({
       name,
@@ -97,11 +109,31 @@ exports.modifyPartnerPassword = async (req, res) => {
 
     try{
 
-      const {password, _id} = req.body; 
+      const {password, name, _id} = req.body; 
 
-      const hashedPassword = await bcrypt.hash(password, 10);
+      let hashedPassword;
 
-      await User.updateOne({_id}, {$set: {password: hashedPassword}}); 
+      let body; 
+
+      if(password && password.length > 2){
+
+        hashedPassword = await bcrypt.hash(password, 10);
+
+        if(name){
+
+          body = {name, password: hashedPassword}
+
+        }else{
+
+          body = {password: hashedPassword}
+        }
+
+
+      }
+
+       
+
+      await User.updateOne({_id}, {$set: body}); 
 
       res.status(201).json({status: 0});
 
