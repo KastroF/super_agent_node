@@ -538,26 +538,46 @@ const endUTC = endOfLocalDay.clone().utc().toDate();
       .sort({ date: -1 })
       .skip(startAt)
       .limit(10);
-
-    const totalDepots = await Order.countDocuments({
-
-          userId: _id ? _id : req.auth.userId, 
-          date: {$gte: startUTC, $lt: endUTC}, 
-          type, 
-          status: "success", 
-          operation: "depot"
-     })
-
-
-     const totalRetraits = await Order.countDocuments({
-
-      userId: _id ? _id : req.auth.userId, 
-      date: {$gte: startUTC, $lt: endUTC}, 
-      type, 
-      status: "success", 
-      operation: "retrait"
- })
-
+      const totalDepotsAgg = await Order.aggregate([
+        {
+          $match: {
+            userId: _id ? _id : req.auth.userId,
+            date: { $gte: startUTC, $lt: endUTC },
+            type,
+            status: "success",
+            operation: "depot"
+          }
+        },
+        {
+          $group: {
+            _id: null,
+            total: { $sum: "$amount" }
+          }
+        }
+      ]);
+      
+      const totalDepots = totalDepotsAgg[0] ? totalDepotsAgg[0].total : 0;
+      
+      // Total des retraits
+      const totalRetraitsAgg = await Order.aggregate([
+        {
+          $match: {
+            userId: _id ? _id : req.auth.userId,
+            date: { $gte: startUTC, $lt: endUTC },
+            type,
+            status: "success",
+            operation: "retrait"
+          }
+        },
+        {
+          $group: {
+            _id: null,
+            total: { $sum: "$amount" }
+          }
+        }
+      ]);
+      
+      const totalRetraits = totalRetraitsAgg[0] ? totalRetraitsAgg[0].total : 0;
 
     const nextStartAt = orders.length === 10 ? startAt + 10 : null;
 

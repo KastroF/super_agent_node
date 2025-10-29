@@ -22,6 +22,8 @@ const userSchema = mongoose.Schema({
   superagentId: { type: mongoose.Schema.Types.ObjectId, ref: "User", default: null },
   services: { type: [String], default: [] },
   count: { type: Number, default: 0 },
+  currentCommission: { type: Number, default: 0 },
+  commissions: [commissionHistorySchema],
 });
 
 module.exports = mongoose.model("User", userSchema);
