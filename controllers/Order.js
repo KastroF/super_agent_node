@@ -71,6 +71,8 @@ exports.addOrder = async (req, res) => {
 async function registerOrderAndCommission(order, commission) {
  // const order = await Order.create(orderData);
 
+ console.log("la commission")
+
   // Si l'utilisateur a un superAgentId → commission pour ce super agent
   if (order.userId) {
 
