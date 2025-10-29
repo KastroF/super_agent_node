@@ -541,7 +541,7 @@ const endUTC = endOfLocalDay.clone().utc().toDate();
       const totalDepotsAgg = await Order.aggregate([
         {
           $match: {
-            userId: _id ? mongoose.Types.ObjectId(_id) : mongoose.Types.ObjectId(req.auth.userId),
+            userId: _id ? new mongoose.Types.ObjectId(_id) :new  mongoose.Types.ObjectId(req.auth.userId),
             date: { $gte: startUTC, $lt: endUTC },
             type,
             status: "success",
@@ -562,7 +562,7 @@ const endUTC = endOfLocalDay.clone().utc().toDate();
       const totalRetraitsAgg = await Order.aggregate([
         {
           $match: {
-            userId: _id ? mongoose.Types.ObjectId(_id) : mongoose.Types.ObjectId(req.auth.userId),
+            userId: _id ? new mongoose.Types.ObjectId(_id) :new  mongoose.Types.ObjectId(req.auth.userId),
             date: { $gte: startUTC, $lt: endUTC },
             type,
             status: "success",
