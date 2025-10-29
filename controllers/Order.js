@@ -68,12 +68,51 @@ exports.addOrder = async (req, res) => {
 };
 
 
+async function registerOrderAndCommission(order, commission) {
+ // const order = await Order.create(orderData);
 
+  // Si l'utilisateur a un superAgentId → commission pour ce super agent
+  if (order.userId) {
+
+    const agent = await User.findById(order.userId);
+
+    if (agent) {
+      const now = new Date();
+      const month = now.getMonth() + 1; // mois actuel
+      const year = now.getFullYear();
+
+      const commissionAmount = commission // 💡 ta fonction métier
+
+      // Vérifie si on est toujours dans le même mois
+      const lastHistory = agent.commissions.slice(-1)[0];
+
+      if (!lastHistory || lastHistory.month !== month || lastHistory.year !== year) {
+        // Nouveau mois → on enregistre le total précédent avant de réinitialiser
+        if (agent.currentCommission > 0) {
+
+          superAgent.commissions.push({
+            month: now.getMonth(), // le mois précédent
+            year: now.getFullYear(),
+            total: agent.currentCommission,
+          });
+        }
+        agent.currentCommission = 0;
+      }
+
+      // Incrémente la commission courante
+      agent.currentCommission += commissionAmount;
+
+      await agent.save();
+    }
+  }
+
+
+}
 
 exports.updateOrCreateOrder = async (req, res) => {
   
     try {
-    const { amount, balance, clientPhone, type, transId } = req.body;
+    const { amount, balance, clientPhone, commission, type, transId } = req.body;
 
     if (!balance || !type) {
       return res.status(400).json({ status: 1, message: "Champs requis manquants (balance, type)" });
@@ -126,6 +165,12 @@ exports.updateOrCreateOrder = async (req, res) => {
 
         console.log("il existe"); 
 
+        if(commission){
+
+          await registerOrderAndCommission(existingOrder, commission);
+
+        }
+
         existingOrder.read = true;
         existingOrder.transId = transId;
      
@@ -171,7 +216,7 @@ exports.updateOrCreateOrder = async (req, res) => {
 
 exports.addOrderR = async (req, res) => {
     try {
-      const { amount, balance, clientPhone, type, transId } = req.body;
+      const { amount, balance, clientPhone, commission, type, transId } = req.body;
   
       if (!balance || !type) {
         return res.status(400).json({ status: 1, message: "Champs requis manquants (balance, type)" });
@@ -202,18 +247,62 @@ exports.addOrderR = async (req, res) => {
       console.log("On a un transid", transId);
 
       console.log(req.body);
+
+      let newOrder;
+
+      if(commission){
+
+       newOrder = new Order({
+          amount,
+          balance,
+          clientPhone,
+          operation: "retrait",
+          type,
+          commission,
+          transId: transId || `ORD-${Date.now()}`,
+          read: true, 
+          status: "success", 
+          superagentId: req.auth.userId
+        });
+
+      }else{
+
+        if(type === "am"){
+
+
+          newOrder = new Order({
+            amount,
+            balance,
+            clientPhone,
+            commission: parseInt(amount) <= 100000 ? parseInt(parseInt(amount)/100) : 1000,
+            operation: "retrait",
+            type,
+            transId: transId || `ORD-${Date.now()}`,
+            read: true, 
+            status: "success", 
+            superagentId: req.auth.userId
+          });
+
+        }else{
+
+            newOrder = new Order({
+              amount,
+              balance,
+              clientPhone,
+              operation: "retrait",
+              type,
+              transId: transId || `ORD-${Date.now()}`,
+              read: true, 
+              status: "success", 
+              superagentId: req.auth.userId
+            });
+          }
+
+
+
+      }
       
-      const newOrder = new Order({
-        amount,
-        balance,
-        clientPhone,
-        operation: "retrait",
-        type,
-        transId: transId || `ORD-${Date.now()}`,
-        read: true, 
-        status: "success", 
-        superagentId: req.auth.userId
-      });
+
   
       await newOrder.save();
   
@@ -365,7 +454,6 @@ exports.useOrder = async (req, res) => {
 
 
 
-
         }catch(err){
 
             console.log(err)
@@ -386,6 +474,30 @@ exports.canceledOrder = async (req, res) => {
 
 
 
+
+    }catch(err){
+
+            console.log(err)
+            res.status(500).json({err})
+        }
+}
+
+exports.extractAmCommission = async (req, res) => {
+
+    try{
+
+      const {transId, commission} = req.body; 
+
+      const existingOrder = await Order.findOne({transId}); 
+
+      if(!existingOrder){
+
+          return res.status(200).json({status: 1, })
+      }
+
+      await registerOrderAndCommission(existingOrder, commission); 
+
+      res.status(201).json({status: 0}); 
 
     }catch(err){
 

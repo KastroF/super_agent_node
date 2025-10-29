@@ -13,7 +13,7 @@ router.get("/getpendingorder", auth, orderCtrl.getPendingOrder);
 router.post("/getpaginatedorders", auth, orderCtrl.getPaginatedOrders);
 router.post("/useorder", auth, orderCtrl.useOrder);
 router.post("/canceledorder", auth, orderCtrl.canceledOrder); 
-
+router.post("/extractamcomission", auth, orderCtrl.extractAmCommission);
 
 
 module.exports = router; 

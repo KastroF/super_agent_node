@@ -1,6 +1,7 @@
 const mongoose = require("mongoose"); 
 
 
+
 const orderSchema = mongoose.Schema({
 
         amount: {type: Number}, 
@@ -15,6 +16,8 @@ const orderSchema = mongoose.Schema({
         status: {type: String}, 
         operation: {type: String}, 
         superagentId: { type: mongoose.Schema.Types.ObjectId, ref: "User", default: null },
+        commission: { type: Number}
+
 })            
 
 

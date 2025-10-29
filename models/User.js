@@ -1,5 +1,11 @@
 const mongoose = require("mongoose");
 
+const commissionHistorySchema = new mongoose.Schema({
+  month: { type: Number, required: true }, // 1 à 12
+  year: { type: Number, required: true },
+  total: { type: Number, default: 0 }, // Total des commissions du mois
+}, { _id: false });
+
 const userSchema = mongoose.Schema({
   name: { type: String, required: true },
   amPhone: { type: String },
