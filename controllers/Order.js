@@ -216,6 +216,8 @@ exports.updateOrCreateOrder = async (req, res) => {
 
 exports.addOrderR = async (req, res) => {
     try {
+      console.log("On addorderr", req.body);
+      
       const { amount, balance, clientPhone, commission, type, transId } = req.body;
   
       if (!balance || !type) {

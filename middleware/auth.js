@@ -37,7 +37,7 @@ module.exports = async (req, res, next) => {
 
           next();
         } else {
-          res.status(201).json({ status: 5, message: "Déconnectez-le" });
+          res.status(200).json({ status: 5, message: "Déconnectez-le" });
         }
       },
       (err) => {
