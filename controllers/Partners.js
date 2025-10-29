@@ -140,7 +140,9 @@ exports.modifyPartnerPassword = async (req, res) => {
 
       await User.updateOne({_id}, {$set: body}); 
 
-      res.status(201).json({status: 0});
+      const user = await User.findById({_id})
+
+      res.status(201).json({status: 0, user});
 
     }catch (err) {
     console.error(err);
