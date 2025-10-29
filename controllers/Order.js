@@ -121,7 +121,7 @@ exports.updateOrCreateOrder = async (req, res) => {
     // Champ à mettre à jour selon le type
     const soldeField = type === "am" ? "amSolde" : "mmSolde";
 
-    console.log()
+    console.log("on confirme le sms", req.body);
 
     // ✅ Mise à jour du solde du user
 
