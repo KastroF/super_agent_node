@@ -527,7 +527,7 @@ exports.extractAmCommission = async (req, res) => {
 
       const existingOrder = await Order.findOne({transId}); 
 
-      console.log("L'order en question");
+      console.log("L'order en question", existingOrder);
 
       if(!existingOrder){
 
