@@ -514,7 +514,7 @@ exports.extractAmCommission = async (req, res) => {
 
     try{
 
-      console.log(req.body);
+      console.log("on extrait la commission", req.body);
 
       const {transId, commission} = req.body; 
 
