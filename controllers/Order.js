@@ -554,7 +554,8 @@ exports.getPaginatedOrders2 = async (req, res) => {
     const {type, _id} = req.body; 
 
     // 🔍 Récupération du user connecté
-    const user = await User.findById(req.auth.userId);
+    const user = await User.findById(_id ? _id : req.auth.userId); 
+    
     if (!user) {
       return res.status(200).json({ status: 1, message: "Utilisateur introuvable" });
     }
