@@ -73,7 +73,7 @@ async function registerOrderAndCommission(order, commissionAmount) {
   const agent = await User.findById(order.userId);
   if (!agent) return;
 
-  console.log()
+  console.log("c'est nous ohhh", {order, commissionAmount});
 
   const now = new Date();
   const currentMonth = now.getMonth() + 1; // Mois de 1 à 12
@@ -109,7 +109,7 @@ async function registerOrderAndCommission(order, commissionAmount) {
   }
 
   // ✅ Cas 3 : même mois → on cumule
-  agent.currentCommission += commissionAmount;
+  agent.currentCommission = agent.currentCommission ? agent.currentCommission + commissionAmount : commissionAmount;
 
   // Mise à jour ou création de l’entrée du mois courant
   const existingEntry = agent.commissions.find(
