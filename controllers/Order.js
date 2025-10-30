@@ -67,49 +67,66 @@ exports.addOrder = async (req, res) => {
   }
 };
 
+async function registerOrderAndCommission(order, commissionAmount) {
+  if (!order.userId) return;
 
-async function registerOrderAndCommission(order, commission) {
- // const order = await Order.create(orderData);
+  const agent = await User.findById(order.userId);
+  if (!agent) return;
 
- console.log("la commission")
+  const now = new Date();
+  const currentMonth = now.getMonth() + 1; // Mois de 1 à 12
+  const currentYear = now.getFullYear();
 
-  // Si l'utilisateur a un superAgentId → commission pour ce super agent
-  if (order.userId) {
+  // Récupère la dernière entrée d'historique
+  const lastHistory = agent.commissions?.slice(-1)[0];
 
-    const agent = await User.findById(order.userId);
-
-    if (agent) {
-      const now = new Date();
-      const month = now.getMonth() + 1; // mois actuel
-      const year = now.getFullYear();
-
-      const commissionAmount = commission // 💡 ta fonction métier
-
-      // Vérifie si on est toujours dans le même mois
-      const lastHistory = agent.commissions.slice(-1)[0];
-
-      if (!lastHistory || lastHistory.month !== month || lastHistory.year !== year) {
-        // Nouveau mois → on enregistre le total précédent avant de réinitialiser
-        if (agent.currentCommission > 0) {
-
-          superAgent.commissions.push({
-            month: now.getMonth(), // le mois précédent
-            year: now.getFullYear(),
-            total: agent.currentCommission,
-          });
-        }
-        agent.currentCommission = 0;
-      }
-
-      // Incrémente la commission courante
-      agent.currentCommission += commissionAmount;
-
-      await agent.save();
-    }
+  // ✅ Cas 1 : premier enregistrement
+  if (!lastHistory) {
+    agent.commissions.push({
+      month: currentMonth,
+      year: currentYear,
+      total: commissionAmount,
+    });
+    agent.currentCommission = commissionAmount;
+    await agent.save();
+    return;
   }
 
+  const lastMonth = lastHistory.month;
+  const lastYear = lastHistory.year;
 
+  // ✅ Cas 2 : changement de mois ou d’année → archivage du mois précédent
+  if (lastMonth !== currentMonth || lastYear !== currentYear) {
+    // On enregistre le total du mois précédent
+    agent.commissions.push({
+      month: currentMonth,
+      year: currentYear,
+      total: 0, // nouveau mois → on démarre à 0
+    });
+    agent.currentCommission = 0;
+  }
+
+  // ✅ Cas 3 : même mois → on cumule
+  agent.currentCommission += commissionAmount;
+
+  // Mise à jour ou création de l’entrée du mois courant
+  const existingEntry = agent.commissions.find(
+    (c) => c.month === currentMonth && c.year === currentYear
+  );
+
+  if (existingEntry) {
+    existingEntry.total = agent.currentCommission;
+  } else {
+    agent.commissions.push({
+      month: currentMonth,
+      year: currentYear,
+      total: agent.currentCommission,
+    });
+  }
+
+  await agent.save();
 }
+
 
 exports.updateOrCreateOrder = async (req, res) => {
   
