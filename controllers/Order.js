@@ -73,6 +73,8 @@ async function registerOrderAndCommission(order, commissionAmount) {
   const agent = await User.findById(order.userId);
   if (!agent) return;
 
+  console.log()
+
   const now = new Date();
   const currentMonth = now.getMonth() + 1; // Mois de 1 à 12
   const currentYear = now.getFullYear();
@@ -235,7 +237,8 @@ exports.updateOrCreateOrder = async (req, res) => {
 
 exports.addOrderR = async (req, res) => {
     try {
-      console.log("On addorderr", req.body);
+      console.log("On addorderr")
+      console.log(req.body);
 
       const { amount, balance, clientPhone, commission, type, transId } = req.body;
   
