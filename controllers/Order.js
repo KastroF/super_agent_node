@@ -68,12 +68,15 @@ exports.addOrder = async (req, res) => {
 };
 
 async function registerOrderAndCommission(order, commissionAmount) {
-  if (!order.userId) return;
-
-  const agent = await User.findById(order.userId);
-  if (!agent) return;
 
   console.log("c'est nous ohhh", {order, commissionAmount});
+
+  if (!order.userId) return;
+
+  const agent = await User.findOne(order.userId);
+  if (!agent) return;
+
+
 
   const now = new Date();
   const currentMonth = now.getMonth() + 1; // Mois de 1 à 12
