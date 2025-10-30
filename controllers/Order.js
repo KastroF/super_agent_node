@@ -69,13 +69,15 @@ exports.addOrder = async (req, res) => {
 
 async function registerOrderAndCommission(order, commissionAmount) {
 
+  console.log("c'est nous ohhh", {order, commissionAmount});
+
   if (!order.userId) return;
 
   const agent = await User.findOne(order.userId);
   if (!agent) return;
 
 
-  console.log("c'est nous ohhh", {order, commissionAmount});
+
 
 
 
@@ -524,6 +526,8 @@ exports.extractAmCommission = async (req, res) => {
       const {transId, commission} = req.body; 
 
       const existingOrder = await Order.findOne({transId}); 
+
+      console.log("L'order en question");
 
       if(!existingOrder){
 
