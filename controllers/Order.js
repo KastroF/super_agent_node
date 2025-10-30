@@ -537,7 +537,7 @@ exports.extractAmCommission = async (req, res) => {
   
         res.status(201).json({status: 0}); 
         
-      }, 5000);
+      }, 4000);
 
     }catch(err){
 
