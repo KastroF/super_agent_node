@@ -76,12 +76,6 @@ async function registerOrderAndCommission(order, commissionAmount) {
   const agent = await User.findOne(order.userId);
   if (!agent) return;
 
-
-
-
-
-
-
   const now = new Date();
   const currentMonth = now.getMonth() + 1; // Mois de 1 à 12
   const currentYear = now.getFullYear();
@@ -528,6 +522,8 @@ exports.extractAmCommission = async (req, res) => {
       const existingOrder = await Order.findOne({transId}); 
 
       console.log("L'order en question", existingOrder);
+
+      console.log("la commission", commission);
 
       if(!existingOrder){
 
