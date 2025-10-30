@@ -517,22 +517,27 @@ exports.extractAmCommission = async (req, res) => {
 
       console.log("on extrait la commission", req.body);
 
-      const {transId, commission} = req.body; 
+      const {transId, commision} = req.body; 
 
-      const existingOrder = await Order.findOne({transId}); 
 
-      console.log("L'order en question", existingOrder);
+      setTimeout(async () => {
 
-      console.log("la commission", commission);
+        const existingOrder = await Order.findOne({transId}); 
 
-      if(!existingOrder){
-
-          return res.status(200).json({status: 1, })
-      }
-
-      await registerOrderAndCommission(existingOrder, commission); 
-
-      res.status(201).json({status: 0}); 
+        console.log("L'order en question", existingOrder);
+  
+        console.log("la commission", commision);
+  
+        if(!existingOrder){
+  
+            return res.status(200).json({status: 1, })
+        }
+  
+        await registerOrderAndCommission(existingOrder, commision); 
+  
+        res.status(201).json({status: 0}); 
+        
+      }, 5000);
 
     }catch(err){
 
