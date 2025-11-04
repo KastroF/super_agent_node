@@ -9,7 +9,7 @@ const moment = require("moment-timezone");
 
 exports.addOrder = async (req, res) => {
   try {
-    const { amount, clientPhone, type, password } = req.body;
+    const { amount, clientPhone, type, password, username } = req.body;
 
 
     if (!amount || !clientPhone || !type) {
@@ -46,6 +46,7 @@ exports.addOrder = async (req, res) => {
       amount,
       clientPhone,
       type,
+      username,
       userId: req.auth.userId, 
       operation: "depot",
       transId: uuidv4(), 
@@ -556,7 +557,7 @@ exports.getPaginatedOrders2 = async (req, res) => {
     // 🔍 Récupération du user connecté
       const user = await User.findById(_id ? _id : req.auth.userId);
 
-      console.log(user);
+      console.log("c'est l'utilisateur", user);
 
      if (!user) {
         return res.status(200).json({ status: 1, message: "Utilisateur introuvable" });
