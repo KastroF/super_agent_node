@@ -46,7 +46,7 @@ exports.addOrder = async (req, res) => {
       amount,
       clientPhone,
       type,
-      username,
+      username: username.lastname+ " "+ username.firstname,
       userId: req.auth.userId, 
       operation: "depot",
       transId: uuidv4(), 
